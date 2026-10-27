@@ -1,0 +1,24 @@
+services:
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: bank_oracle_xe
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=Oradoc_db1
+      - APP_USER=BANKADMIN
+      - APP_USER_PASSWORD=BankSecret123
+      - ORACLE_DATABASE=XEPDB1
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./database:/container-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "$ORACLE_BASE/oraInventory/orainstRoot.sh || exit 0"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  oracle-data:
+    driver: local
